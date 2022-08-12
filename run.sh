@@ -1,1 +1,1 @@
-sudo python3 plastic-detection.py
+sudo python3 plastic_detection.py
