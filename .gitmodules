@@ -4,3 +4,6 @@
 [submodule "mobilenetv1_models"]
 	path = mobilenetv1_models
 	url = https://github.com/ariaamadeus/mobilenetv1_models.git
+[submodule "jetson-inference"]
+	path = jetson-inference
+	url = https://github.com/dusty-nv/jetson-inference.git
