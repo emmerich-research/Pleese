@@ -1,5 +1,8 @@
 cd jetson-inference
 mkdir build && cd build
-cmake ..
-make
+sudo cmake ..
 sudo make install
+sudo ldconfig
+cd .. && cd python/training/detection/ssd
+pip3 installi -r requirements.txt
+cd ../../../../..
