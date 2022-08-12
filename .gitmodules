@@ -1,0 +1,4 @@
+[submodule "Bottle_dataset"]
+	url = https://github.com/ariaamadeus/Bottle_dataset.git
+[submodule "mobilenetv1_models"]
+	url = https://github.com/ariaamadeus/mobilenetv1_models.git
