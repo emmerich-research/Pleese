@@ -1,5 +1,5 @@
-# Pleese 
-## **Pl**astic R**e**use R**e**minder **S**yst**e**m via Deep Learning Computer Vision
+# Pleese  
+**Pl**astic R**e**use R**e**minder **S**yst**e**m via Deep Learning Computer Vision
 
 
 Clone it recursively to download our datasets and trained models in your Jetson mini-computer
@@ -14,12 +14,16 @@ chmod +x buildall.sh run.sh
 ```
 you need to enter your Jetson password for sudo access
 
-run it with 
+run the detection program it with 
 ```
 ./run.sh
 ```
 or
 ```
-sudo python3 plastic-detection.py`
+sudo python3 plastic-detection.py
 ```
-is normal if it takes longer time at first run
+make sure your camera is available by running this command
+```
+ls /dev/video0
+```
+is a normal thing if it takes longer time at the first run.
