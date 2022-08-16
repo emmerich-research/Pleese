@@ -7,3 +7,6 @@
 [submodule "jetson-inference"]
 	path = jetson-inference
 	url = https://github.com/dusty-nv/jetson-inference.git
+[submodule "mAP"]
+	path = mAP
+	url = https://github.com/Cartucho/mAP.git

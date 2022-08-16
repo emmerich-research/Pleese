@@ -20,6 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+import os
 import sys
 import time
 
@@ -29,18 +30,36 @@ import keyboard
 import numpy as np
 import tkinter as tk
 
-from gui import Application
+from GUI import Application
+
 
 # Once run variables
-root = tk.Tk()
 
-app = Application('assets/logo.jpeg',
-        master=root,
-        width=1280,
-        height=1024,
-        bg='white')
+calcmAP = True
 
-stream= True #True:camera|False:video or image
+stream = False # True:camera|False:video or image or images
+source_path = "Bottle_dataset/JPEGImages" # insert image/video file or folder, contains images/videos
+
+if stream:
+    #800x600, 640x480, 1920x1080, 1280x960, 1280x720, 4096x2160, 1024x576
+    camera = jetson.utils.gstCamera(1024, 576, "/dev/video0")
+    root = tk.Tk()
+
+    app = Application('logo.jpeg',
+            master=root,
+            width=1280,
+            height=1024,
+            bg='white')
+else:
+    is_headless = ["--headless"] if sys.argv[0].find('console.py') != -1 else [""]
+
+    global sources
+    if os.path.isdir(source_path):
+        sources = os.listdir(source_path) 
+    elif os.path.isfile(source_path):
+        sources = [source_path]
+    else:
+        raise(f'source_path = {source_path} not found!')
 
 net = jetson.inference.detectNet(argv=['--model=mobilenetv1_models/own2-ssd-mobilenet.onnx',
     '--labels=mobilenetv1_models/Ownlabels.txt',
@@ -79,18 +98,9 @@ net6 = jetson.inference.detectNet(argv=['--model=mobilenetv1_models/TACO4-ssd-mo
     '--output-cvg=scores',
     '--output-bbox=boxes',
     '--threshold=0.3'])
-
 theNet = [net, net1, net2, net3, net4, net5, net6]
 
-if stream:
-    #800x600, 640x480, 1920x1080, 1280x960, 1280x720, 4096x2160, 1024x576
-    camera = jetson.utils.gstCamera(1024, 576, "/dev/video0")
-else:
-    camera = jetson.utils.videoSource("assets/testing.jpg",argv=sys.argv)
-    is_headless = ["--headless"] if sys.argv[0].find('console.py') != -1 else [""]
-    output = jetson.utils.videoOutput("output_0.jpg",argv=sys.argv+is_headless)
-
-#volatile variable
+# volatile variable
 flag = 0
 start = 0
 randomOn = False
@@ -113,6 +123,7 @@ def keyboardDetect():
         lang = 'v'
 
 def second():
+    global is_headless, sources
     global theNet, last_lang, start, lang, stream, flag, camera, display
     
     if flag == -1 : exit()
@@ -154,16 +165,26 @@ def second():
         root.after(4,second)
         
     else:
-        img = camera.Capture()
-        detections = net.Detect(img, overlay="box,labels,conf") if flag else net2.Detect(img, overlay="box,labels,conf")
- 
-        print("detected {:d} objects in image".format(len(detections)))
-        for detection in detections:
-            print(detection)
-        output.Render(img)
-        if not camera.IsStreaming() or not output.IsStreaming():
-            exit()
+        print(f'processing {len(sources)} file(s)')
+        for i,source in enumerate(sources):
+            camera = jetson.utils.videoSource(source,argv=sys.argv)
+            output = jetson.utils.videoOutput(f"output_{i}.jpg",argv=sys.argv+is_headless)
+            
+            img = camera.Capture()
+            detections = theNet[flag].Detect(img, overlay="box,labels,conf")
+            
+            print("detected {:d} objects in image".format(len(detections)))
+            for detection in detections:
+                print(detection)
+            
+            #if calcmAP:
+            #    detection
+                #mAP = 
+            #    from mAP import main
+            output.Render(img)
+
+        exit()
 
 if __name__ == "__main__":
-    second()
+    second() # if camera not streaming, exit
     root.mainloop()
