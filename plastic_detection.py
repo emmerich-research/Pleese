@@ -30,7 +30,7 @@ import keyboard
 import numpy as np
 import tkinter as tk
 
-from GUI import Application
+from gui import Application
 
 
 # Once run variables
